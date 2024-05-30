@@ -56,29 +56,35 @@ function App() {
   const [fruits, setFruits] = useState<DataItem[]>([]);
   const [vegetables, setVegetables] = useState<DataItem[]>([]);
   const [remainingItems, setRemainingItems] = useState<DataItem[]>(initialData);
+  const [timeouts, setTimeouts] = useState<{ [key: string]: NodeJS.Timeout }>({});
 
   const handleClick = (item: DataItem) => {
     setRemainingItems((prevItems) => prevItems.filter((i) => i.name !== item.name));
 
     if (item.type === 'Fruit') {
       setFruits((prevFruits) => [...prevFruits, item]);
-      setTimeout(() => moveToMainList(item), 5000);
+      const timeout = setTimeout(() => moveToMainList(item), 5000);
+      setTimeouts((prevTimeouts) => ({ ...prevTimeouts, [item.name]: timeout }));
     } else {
       setVegetables((prevVegetables) => [...prevVegetables, item]);
-      setTimeout(() => moveToMainList(item), 5000);
+      const timeout = setTimeout(() => moveToMainList(item), 5000);
+      setTimeouts((prevTimeouts) => ({ ...prevTimeouts, [item.name]: timeout }));
     }
   };
 
   const handleImmediateReturn = (item: DataItem) => {
-    setFruits((prevFruits) => prevFruits.filter((i) => i.name !== item.name));
-    setVegetables((prevVegetables) => prevVegetables.filter((i) => i.name !== item.name));
-    setRemainingItems((prevItems) => [...prevItems, item]);
+    clearTimeout(timeouts[item.name]);
+    moveToMainList(item);
   };
 
   const moveToMainList = (item: DataItem) => {
     setFruits((prevFruits) => prevFruits.filter((i) => i.name !== item.name));
     setVegetables((prevVegetables) => prevVegetables.filter((i) => i.name !== item.name));
     setRemainingItems((prevItems) => [...prevItems, item]);
+    setTimeouts((prevTimeouts) => {
+      const { [item.name]: _, ...rest } = prevTimeouts;
+      return rest;
+    });
   };
 
   return (
