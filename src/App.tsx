@@ -58,21 +58,27 @@ function App() {
   const [remainingItems, setRemainingItems] = useState<DataItem[]>(initialData);
 
   const handleClick = (item: DataItem) => {
-    setRemainingItems(prevItems => prevItems.filter(i => i.name !== item.name));
+    setRemainingItems((prevItems) => prevItems.filter((i) => i.name !== item.name));
 
     if (item.type === 'Fruit') {
-      setFruits(prevFruits => [...prevFruits, item]);
+      setFruits((prevFruits) => [...prevFruits, item]);
       setTimeout(() => moveToMainList(item), 5000);
     } else {
-      setVegetables(prevVegetables => [...prevVegetables, item]);
+      setVegetables((prevVegetables) => [...prevVegetables, item]);
       setTimeout(() => moveToMainList(item), 5000);
     }
   };
 
+  const handleImmediateReturn = (item: DataItem) => {
+    setFruits((prevFruits) => prevFruits.filter((i) => i.name !== item.name));
+    setVegetables((prevVegetables) => prevVegetables.filter((i) => i.name !== item.name));
+    setRemainingItems((prevItems) => [...prevItems, item]);
+  };
+
   const moveToMainList = (item: DataItem) => {
-    setFruits(prevFruits => prevFruits.filter(i => i.name !== item.name));
-    setVegetables(prevVegetables => prevVegetables.filter(i => i.name !== item.name));
-    setRemainingItems(prevItems => [...prevItems, item]);
+    setFruits((prevFruits) => prevFruits.filter((i) => i.name !== item.name));
+    setVegetables((prevVegetables) => prevVegetables.filter((i) => i.name !== item.name));
+    setRemainingItems((prevItems) => [...prevItems, item]);
   };
 
   return (
@@ -93,7 +99,11 @@ function App() {
           <div className="bg-gray-100 p-4 text-center">Fruit</div>
           <div className="space-y-4 p-4">
             {fruits.map((fruit, index) => (
-              <div key={index} className="border shadow-sm p-4 text-center">
+              <div
+                key={index}
+                className="border shadow-sm p-4 text-center cursor-pointer hover:bg-slate-50"
+                onClick={() => handleImmediateReturn(fruit)}
+              >
                 {fruit.name}
               </div>
             ))}
@@ -105,7 +115,11 @@ function App() {
           <div className="bg-gray-100 p-4 text-center">Vegetable</div>
           <div className="space-y-4 p-4">
             {vegetables.map((vegetable, index) => (
-              <div key={index} className="border shadow-sm p-4 text-center">
+              <div
+                key={index}
+                className="border shadow-sm p-4 text-center cursor-pointer hover:bg-slate-50"
+                onClick={() => handleImmediateReturn(vegetable)}
+              >
                 {vegetable.name}
               </div>
             ))}
